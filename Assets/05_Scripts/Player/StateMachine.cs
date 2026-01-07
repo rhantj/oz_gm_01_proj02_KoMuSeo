@@ -4,9 +4,14 @@ namespace StateController
 {
     public enum StateName
     {
+        Idle = 100,
         Move,
-        Dash,
-        Attack
+        Jump,
+        Crouch,
+        Fire = 200,
+        Reload,
+        Melee,
+        Throw
     }
 
     public class StateMachine

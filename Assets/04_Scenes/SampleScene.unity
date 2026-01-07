@@ -574,7 +574,7 @@ Camera:
     height: 1
   near clip plane: 0.3
   far clip plane: 1000
-  field of view: 60
+  field of view: 90
   orthographic: 0
   orthographic size: 5
   m_Depth: -1
@@ -600,12 +600,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 330585543}
   serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 0, y: 1, z: -10}
+  m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
+  m_LocalPosition: {x: 0, y: 0.5899999, z: 0.32}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
+  m_Children:
+  - {fileID: 543497634}
+  m_Father: {fileID: 476954668}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &330585547
 MonoBehaviour:
@@ -870,7 +871,7 @@ Transform:
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
-  - {fileID: 543497634}
+  - {fileID: 330585546}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &476954669
@@ -888,6 +889,10 @@ MonoBehaviour:
   playerCtx: {fileID: 476954671}
   inputAction: {fileID: 476954670}
   inputDir: {x: 0, y: 0, z: 0}
+  mouseDelta: {x: 0, y: 0, z: 0}
+  ISGROUNDED: 0
+  isJump: 0
+  isCrouching: 0
 --- !u!114 &476954670
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -913,8 +918,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: e43b69e3b7cbe28428f49b640c2bd9ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Player
+  PlayerCamera: {fileID: 330585546}
   maxHp: 0
-  moveSpeed: 3
+  moveSpeed: 8
+  jumpForce: 8
+  sensitivity: 0.5
 --- !u!143 &476954672
 CharacterController:
   m_ObjectHideFlags: 0
@@ -953,7 +961,7 @@ GameObject:
   - component: {fileID: 543497636}
   - component: {fileID: 543497635}
   m_Layer: 0
-  m_Name: Cube
+  m_Name: Weapon
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -968,11 +976,11 @@ Transform:
   m_GameObject: {fileID: 543497633}
   serializedVersion: 2
   m_LocalRotation: {x: -0, y: -0, z: -0, w: 1}
-  m_LocalPosition: {x: 0.45, y: 0, z: 1.35}
+  m_LocalPosition: {x: 0.95, y: -0.39200002, z: 0.22}
   m_LocalScale: {x: 0.2, y: 0.2, z: 2}
   m_ConstrainProportionsScale: 0
   m_Children: []
-  m_Father: {fileID: 476954668}
+  m_Father: {fileID: 330585546}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!65 &543497635
 BoxCollider:
@@ -1980,7 +1988,6 @@ Transform:
 SceneRoots:
   m_ObjectHideFlags: 0
   m_Roots:
-  - {fileID: 330585546}
   - {fileID: 410087041}
   - {fileID: 832575519}
   - {fileID: 1802543448}

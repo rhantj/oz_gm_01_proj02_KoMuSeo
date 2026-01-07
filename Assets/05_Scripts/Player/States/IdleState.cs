@@ -1,12 +1,12 @@
 using StateController;
 
-public class MoveState : BasePlayerState
+public class IdleState : BasePlayerState
 {
-    public MoveState(PlayerController controller) : base(controller) { }
+    public IdleState(PlayerController controller) : base(controller) { }
 
     public override void OnUpdateState()
     {
-        if (Controller.isJump && playerCtx.CharacterController.isGrounded)
+        if (Controller.isJump)
         {
             Controller.isJump = false;
             playerCtx.MovementSM.ChangeState(StateName.Jump);
@@ -19,12 +19,9 @@ public class MoveState : BasePlayerState
             return;
         }
 
-        if (Controller.inputDir.sqrMagnitude <= 0.01f)
+        if(Controller.inputDir.sqrMagnitude > 0.01f)
         {
-            playerCtx.MovementSM.ChangeState(StateName.Idle);
+            playerCtx.MovementSM.ChangeState(StateName.Move);
         }
-
-        ApplyGravity();
-        CommonMovement();
     }
 }

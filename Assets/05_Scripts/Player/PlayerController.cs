@@ -1,5 +1,6 @@
 using UnityEngine;
 using UnityEngine.InputSystem;
+using UnityEngine.InputSystem.Interactions;
 
 [RequireComponent(typeof(PlayerContext), typeof(PlayerInputActions))]
 public class PlayerController : MonoBehaviour
@@ -10,6 +11,10 @@ public class PlayerController : MonoBehaviour
     public Vector3 inputDir;
     public Vector3 mouseDelta;
     float pitch = 0;
+    public bool ISGROUNDED;
+    public bool isJump = false;
+    public bool isCrouching = false;
+    public bool isFiring = false;
 
     private void Awake()
     {
@@ -17,25 +22,13 @@ public class PlayerController : MonoBehaviour
         inputAction = GetComponent<PlayerInputActions>();
     }
 
-    public void OnMoveInput(InputAction.CallbackContext context)
+    private void Update()
     {
-        Vector2 input = context.ReadValue<Vector2>();
-        inputDir = new Vector3(input.x, 0, input.y);
+        OnMouseInput();
+        ISGROUNDED = playerCtx.CharacterController.isGrounded;
     }
 
-    public void OnMoveInputCanceld(InputAction.CallbackContext context)
-    {
-        inputDir = Vector3.zero;
-    }
-
-    public void LookAt(Vector3 direction)
-    {
-        if (direction.sqrMagnitude <= 0.01f) return;
-        Quaternion targetAngle = Quaternion.LookRotation(direction);
-        transform.rotation = targetAngle;
-    }
-
-    public void OnMouseInput(InputAction.CallbackContext context)
+    public void OnMouseInput()
     {
         mouseDelta = Mouse.current.delta.ReadValue();
         float mouseX = mouseDelta.x * playerCtx.Seneitivity;
@@ -45,5 +38,51 @@ public class PlayerController : MonoBehaviour
         pitch = Mathf.Clamp(pitch, -85f, 85f);
         playerCtx.PlayerCamera.localRotation = Quaternion.Euler(pitch, 0, 0);
         playerCtx.CharacterController.transform.Rotate(Vector3.up * mouseX);
+    }
+
+    public void OnMoveInput(InputAction.CallbackContext context)
+    {
+        Vector2 input = context.ReadValue<Vector2>();
+        inputDir = new Vector3(input.x, 0, input.y);
+    }
+
+    public void OnMoveInputCanceled(InputAction.CallbackContext context)
+    {
+        inputDir = Vector3.zero;
+    }
+
+    public void OnJumpInput(InputAction.CallbackContext context)
+    {
+        if (!context.started || !playerCtx.CharacterController.isGrounded) return;
+        isJump = true;
+    }
+
+    public void OnCrouchInput(InputAction.CallbackContext context)
+    {
+        if(context.interaction is PressInteraction)
+        {
+            isCrouching = !isCrouching;
+            return;
+        }
+
+        isCrouching = true;
+    }
+
+    public void OnCrouchInputCanceled(InputAction.CallbackContext context)
+    {
+        if(context.interaction is HoldInteraction)
+        {
+            isCrouching = false;
+        }
+    }
+
+    public void OnFireInput(InputAction.CallbackContext context)
+    {
+        isFiring = true;
+    }
+
+    public void OnFireInputCanceled(InputAction.CallbackContext context)
+    {
+        isFiring = false;
     }
 }
