@@ -11,7 +11,7 @@ public class DamageSystem : MonoBehaviour
         Pipeline = new DamagePipeline();
         StaticRegistry.Add(this);
 
-        Pipeline.Add(new DistanceFalloffModifier(20f, 0.01f));
+        Pipeline.Add(new DistanceFalloffModifier(30f, 0.01f));
         Pipeline.Add(new HeadShotModifier());
         //Pipeline.Add(new ArmorModifier());
     }

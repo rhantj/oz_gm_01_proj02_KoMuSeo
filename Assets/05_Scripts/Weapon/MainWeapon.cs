@@ -18,11 +18,15 @@ public class MainWeapon : MonoBehaviour
     [Header("Spread"), Tooltip("탄환 퍼짐 정도")]
     public float spreadAngle = 0.6f;
 
-    DamageSystem dms;
-
-    private void Awake()
+    private DamageSystem dms;
+    private DamageSystem DMS
     {
-        dms = StaticRegistry.Find<DamageSystem>();
+        get
+        {
+            if(dms == null)
+                dms = StaticRegistry.Find<DamageSystem>();
+            return dms;
+        }
     }
 
     public void Fire() 
@@ -31,7 +35,7 @@ public class MainWeapon : MonoBehaviour
         lastFireTime = Time.time;
 
         //Vector3 dir = GetSpreadDirection();
-        Vector3 dir = muzzle.forward;
+        Vector3 dir = GetSpreadDirection();
 
         Debug.DrawRay(muzzle.position, dir * hitscanRange, Color.red);
         if (Physics.Raycast(muzzle.position, dir, out var hit, hitscanRange))
@@ -47,10 +51,10 @@ public class MainWeapon : MonoBehaviour
                     damage = hitDamage,
                     distance = hit.distance,
                     damageType = DamageType.Bullet,
-                    hitZone = dms.ResolveHitZone(hit.collider)
+                    hitZone = DMS.ResolveHitZone(hit.collider)
                 };
                 
-                DamageResult res = dms.Pipeline.Calculate(context);
+                DamageResult res = DMS.Pipeline.Calculate(context);
                 dmg.ApplyDamage(res);
             }
 
@@ -59,7 +63,7 @@ public class MainWeapon : MonoBehaviour
         }
 
         var bm = StaticRegistry.Find<BulletManger>();
-        bm.SpawnBullet(muzzle.position, dir, bulletSpeed);
+        bm.SpawnBullet(muzzle.position, dir, bulletSpeed, hitDamage);
 
     }
 

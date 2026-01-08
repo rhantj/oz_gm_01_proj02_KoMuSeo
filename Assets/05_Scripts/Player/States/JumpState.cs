@@ -15,7 +15,7 @@ public class JumpState : BasePlayerState
 
         if (playerCtx.CharacterController.isGrounded && yVelocity <= 0f)
         {
-            playerCtx.MovementSM.ChangeState(StateController.StateName.Move);
+            playerCtx.MovementSM.ChangeState(Controller.PrevMovementState);
         }
     }
 

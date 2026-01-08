@@ -2,8 +2,8 @@ using UnityEngine;
 
 public class DistanceFalloffModifier : IDamageModifier
 {
-    float minDistance;
-    float falloffRate;
+    private float minDistance;
+    private float falloffRate;
 
     public DistanceFalloffModifier(float mindist, float rate)
     {

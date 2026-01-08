@@ -6,6 +6,12 @@ public class MoveState : BasePlayerState
 
     public override void OnUpdateState()
     {
+        if (Controller.isSprinting)
+        {
+            playerCtx.MovementSM.ChangeState(StateName.Sprint);
+            return;
+        }
+
         if (Controller.isJump && playerCtx.CharacterController.isGrounded)
         {
             Controller.isJump = false;

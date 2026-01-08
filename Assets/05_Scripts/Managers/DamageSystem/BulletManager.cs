@@ -7,9 +7,20 @@ public class BulletManger : MonoBehaviour
     [Header("Settings")]
     [Range(0, 1)] public float gravityScale = 0.3f;
     [Range(0, 3)] public float maxLifeTime = 3f;
+    public float damage;
 
     List<Bullet> bullets = new();
     DamageSystem dms;
+    DamageSystem DMS
+    {
+        get
+        {
+            if(dms == null)
+                dms = StaticRegistry.Find<DamageSystem>();
+
+            return dms;
+        }
+    }
 
     private void Awake()
     {
@@ -23,7 +34,7 @@ public class BulletManger : MonoBehaviour
     }
 
     // 탄환 소환 및 초기화
-    public void SpawnBullet(Vector3 pos, Vector3 dir, float speed)
+    public void SpawnBullet(Vector3 pos, Vector3 dir, float speed, float damage)
     {
         bullets.Add(new Bullet
         {
@@ -87,10 +98,10 @@ public class BulletManger : MonoBehaviour
             damage = 1f,
             distance = dist,
             damageType = DamageType.Bullet,
-            hitZone = dms.ResolveHitZone(hit.collider)
+            hitZone = DMS.ResolveHitZone(hit.collider)
         };
 
-        DamageResult res = dms.Pipeline.Calculate(ctx);
+        DamageResult res = DMS.Pipeline.Calculate(ctx);
         dmg.ApplyDamage(res);
     }
 }

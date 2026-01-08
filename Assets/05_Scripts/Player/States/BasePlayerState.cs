@@ -13,11 +13,6 @@ public abstract class BasePlayerState : BaseState
         playerCtx = Controller.playerCtx;
     }
 
-    public void TransitionBrench()
-    {
-
-    }
-
     public void ApplyGravity()
     {
         if (playerCtx.CharacterController.isGrounded && yVelocity < 0f)

@@ -10,7 +10,7 @@ public class FireState : BaseState
     public override void OnEnterState()
     {
         base.OnEnterState();
-        weapon  = Controller.GetComponentInChildren<MainWeapon>();
+        weapon = Controller.GetComponentInChildren<MainWeapon>();
     }
 
     public override void OnUpdateState()

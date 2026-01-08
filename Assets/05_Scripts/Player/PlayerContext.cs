@@ -66,6 +66,7 @@ public class PlayerContext : MonoBehaviour
     {
         MovementSM = new StateMachine(StateName.Idle, new IdleState(player));
         MovementSM.AddState(StateName.Move, new MoveState(player));
+        MovementSM.AddState(StateName.Sprint, new SprintState(player));
         MovementSM.AddState(StateName.Jump, new JumpState(player));
         MovementSM.AddState(StateName.Crouch, new CrouchState(player));
     }

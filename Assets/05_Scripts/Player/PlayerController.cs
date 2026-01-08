@@ -1,3 +1,4 @@
+using StateController;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
@@ -7,10 +8,12 @@ public class PlayerController : MonoBehaviour
 {
     public PlayerContext playerCtx;
     public PlayerInputActions inputAction;
+    public StateName PrevMovementState { get; set; } = StateName.Move;
 
     public Vector3 inputDir;
     public Vector3 mouseDelta;
     float pitch = 0;
+    public bool isSprinting = false;
     public bool ISGROUNDED;
     public bool isJump = false;
     public bool isCrouching = false;
@@ -49,6 +52,17 @@ public class PlayerController : MonoBehaviour
     public void OnMoveInputCanceled(InputAction.CallbackContext context)
     {
         inputDir = Vector3.zero;
+    }
+
+    public void OnSprintInput(InputAction.CallbackContext context)
+    {
+        if (inputDir != Vector3.zero)
+            isSprinting = true;
+    }
+
+    public void OnSprintInputCanceled(InputAction.CallbackContext context)
+    {
+        isSprinting = false;
     }
 
     public void OnJumpInput(InputAction.CallbackContext context)

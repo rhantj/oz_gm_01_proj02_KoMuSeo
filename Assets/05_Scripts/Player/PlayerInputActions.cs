@@ -13,9 +13,15 @@ public class PlayerInputActions : MonoBehaviour
 
         InputActions.Player.Move.performed += pctrl.OnMoveInput;
         InputActions.Player.Move.canceled += pctrl.OnMoveInputCanceled;
+
+        InputActions.Player.Sprint.performed += pctrl.OnSprintInput;
+        InputActions.Player.Sprint.canceled += pctrl.OnSprintInputCanceled;
+
         InputActions.Player.Jump.started += pctrl.OnJumpInput;
+
         InputActions.Player.Crouch.performed += pctrl.OnCrouchInput;
         InputActions.Player.Crouch.canceled += pctrl.OnCrouchInputCanceled;
+
         InputActions.Player.Attack.performed += pctrl.OnFireInput;
         InputActions.Player.Attack.canceled += pctrl.OnFireInputCanceled;
     }

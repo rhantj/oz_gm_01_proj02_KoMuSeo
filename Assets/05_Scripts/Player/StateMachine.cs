@@ -6,6 +6,7 @@ namespace StateController
     {
         Idle = 100,
         Move,
+        Sprint,
         Jump,
         Crouch,
         ActionIdle = 200,

@@ -12,6 +12,7 @@ public class CrouchState : BasePlayerState
         base.OnEnterState();
 
         camPos = playerCtx.PlayerCamera.localPosition;
+        camPos = new Vector3(0, camPos.y, 0);
         camPos.y *= 0.3f;
         speed = playerCtx.MoveSpeed;
         speed *= 0.3f;
