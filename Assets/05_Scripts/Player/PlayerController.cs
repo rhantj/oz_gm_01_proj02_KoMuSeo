@@ -1,4 +1,6 @@
 using StateController;
+using System.Collections.Generic;
+using System.Linq;
 using UnityEngine;
 using UnityEngine.InputSystem;
 using UnityEngine.InputSystem.Interactions;
@@ -6,29 +8,39 @@ using UnityEngine.InputSystem.Interactions;
 [RequireComponent(typeof(PlayerContext), typeof(PlayerInputActions))]
 public class PlayerController : MonoBehaviour
 {
+    [Header("Player ref")]
     public PlayerContext playerCtx;
     public PlayerInputActions inputAction;
+    public WeaponManager weapons;
+    public FireInputContext fireInput;
     public StateName PrevMovementState { get; set; } = StateName.Move;
 
     public Vector3 inputDir;
     public Vector3 mouseDelta;
     float pitch = 0;
+    public int weaponIdx = 0;
     public bool isSprinting = false;
     public bool ISGROUNDED;
     public bool isJump = false;
     public bool isCrouching = false;
-    public bool isFiring = false;
+    //public bool isFiring = false;
+    public bool prevFirePressed;
 
     private void Awake()
     {
         playerCtx = GetComponent<PlayerContext>();
         inputAction = GetComponent<PlayerInputActions>();
+        weapons = GetComponent<WeaponManager>();
+        fireInput = new FireInputContext();
     }
 
     private void Update()
     {
         OnMouseInput();
         ISGROUNDED = playerCtx.CharacterController.isGrounded;
+
+        fireInput.wasPressedThisFrame = fireInput.isPressed && !prevFirePressed;
+        prevFirePressed = fireInput.isPressed;
     }
 
     public void OnMouseInput()
@@ -92,11 +104,25 @@ public class PlayerController : MonoBehaviour
 
     public void OnFireInput(InputAction.CallbackContext context)
     {
-        isFiring = true;
+        fireInput.isPressed = context.ReadValueAsButton();
     }
 
     public void OnFireInputCanceled(InputAction.CallbackContext context)
     {
-        isFiring = false;
+        fireInput.isPressed = context.ReadValueAsButton();
+    }
+
+    public void OnModeInput(InputAction.CallbackContext context)
+    {
+        weapons.GetCurrentWeapon().NextFireMode();
+    }
+
+    public void OnMainWeaponInput(InputAction.CallbackContext context)
+    {
+        weapons.Equip(0);
+    }
+    public void OnSubWeaponInput(InputAction.CallbackContext context)
+    {
+        weapons.Equip(1);
     }
 }

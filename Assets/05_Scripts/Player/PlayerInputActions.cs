@@ -1,5 +1,4 @@
 using UnityEngine;
-using UnityEngine.UIElements;
 
 public class PlayerInputActions : MonoBehaviour
 {
@@ -12,18 +11,24 @@ public class PlayerInputActions : MonoBehaviour
         pctrl = GetComponent<PlayerController>();
 
         InputActions.Player.Move.performed += pctrl.OnMoveInput;
-        InputActions.Player.Move.canceled += pctrl.OnMoveInputCanceled;
+        InputActions.Player.Move.canceled  += pctrl.OnMoveInputCanceled;
 
         InputActions.Player.Sprint.performed += pctrl.OnSprintInput;
-        InputActions.Player.Sprint.canceled += pctrl.OnSprintInputCanceled;
+        InputActions.Player.Sprint.canceled  += pctrl.OnSprintInputCanceled;
 
         InputActions.Player.Jump.started += pctrl.OnJumpInput;
 
         InputActions.Player.Crouch.performed += pctrl.OnCrouchInput;
-        InputActions.Player.Crouch.canceled += pctrl.OnCrouchInputCanceled;
+        InputActions.Player.Crouch.canceled  += pctrl.OnCrouchInputCanceled;
 
         InputActions.Player.Attack.performed += pctrl.OnFireInput;
-        InputActions.Player.Attack.canceled += pctrl.OnFireInputCanceled;
+        InputActions.Player.Attack.canceled  += pctrl.OnFireInputCanceled;
+
+        InputActions.Player.Previous.performed += pctrl.OnMainWeaponInput;
+
+        InputActions.Player.Next.performed += pctrl.OnSubWeaponInput;
+
+        InputActions.Player.FireModeChange.started += pctrl.OnModeInput;
     }
 
     private void OnEnable()

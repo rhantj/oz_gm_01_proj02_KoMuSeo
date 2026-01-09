@@ -12,5 +12,7 @@ public class Target : MonoBehaviour, IDamageable
         }
 
         hp -= (int)res.finalDamage;
+
+        Debug.Log(hp);
     }
 }
