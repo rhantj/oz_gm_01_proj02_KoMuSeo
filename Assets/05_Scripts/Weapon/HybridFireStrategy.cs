@@ -3,9 +3,9 @@ using UnityEngine;
 
 public class HybridFireStrategy : IWeaponFireStrategy
 {
-    public void Fire(WeaponContext ctx)
+    public bool Fire(WeaponContext ctx)
     {
-        if (Time.time < ctx.lastFireTime + ctx.fireRate) return;
+        if (Time.time < ctx.lastFireTime + ctx.fireRate) return false;
         ctx.lastFireTime = Time.time;
 
         Vector3 dir = GetSpreadDirection(ctx);
@@ -32,11 +32,12 @@ public class HybridFireStrategy : IWeaponFireStrategy
             }
 
             SpawnTracer(hit.point);
-            return;
+            return true;
         }
 
         var bm = StaticRegistry.Find<BulletManger>();
         bm.SpawnBullet(ctx.muzzle.position, dir, ctx.bulletSpeed, ctx.damage, ctx.dms, ctx.maxRange);
+        return true;
     }
 
     Vector3 GetSpreadDirection(WeaponContext ctx)

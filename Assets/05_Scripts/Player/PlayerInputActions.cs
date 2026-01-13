@@ -32,6 +32,8 @@ public class PlayerInputActions : MonoBehaviour
 
         InputActions.Player.Melee.started += pctrl.OnMeleeInput;
         InputActions.Player.Melee.canceled += pctrl.OnMeleeInputCanceled;
+
+        InputActions.Player.Reload.started += pctrl.OnReloadInput;
     }
 
     private void OnEnable()

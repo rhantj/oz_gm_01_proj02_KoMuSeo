@@ -20,5 +20,10 @@ public class ActionIdleState : BaseState
         {
             Controller.playerCtx.ActionSM.ChangeState(StateName.Melee);
         }
+
+        if (Controller.isReload) 
+        {
+            Controller.playerCtx.ActionSM.ChangeState(StateName.Reload);
+        }
     }
 }

@@ -27,6 +27,7 @@ public class PlayerController : MonoBehaviour
     //public bool isFiring = false;
     public bool prevFirePressed;
     public bool isMelee;
+    public bool isReload;
 
     private void Awake()
     {
@@ -34,14 +35,34 @@ public class PlayerController : MonoBehaviour
         inputAction = GetComponent<PlayerInputActions>();
         weapons = GetComponent<WeaponManager>();
         fireInput = new FireInputContext();
+
+        StaticRegistry.Add(this);
     }
 
     private void Update()
     {
         OnMouseInput();
         ISGROUNDED = playerCtx.CharacterController.isGrounded;
+    }
 
-        
+    private void OnEnable()
+    {
+        weapons.OnWeaponChanged += BindWeapon;
+    }
+
+    private void OnDisable()
+    {
+        weapons.OnWeaponChanged -= UnBindWeapon;
+    }
+
+    void BindWeapon(Weapon weapon)
+    {
+        weapon.OnAmmoEmpty += AmmoEmpty;
+    }
+
+    void UnBindWeapon(Weapon weapon)
+    {
+        weapon.OnAmmoEmpty -= AmmoEmpty;
     }
 
     public void OnMouseInput()
@@ -56,24 +77,32 @@ public class PlayerController : MonoBehaviour
         playerCtx.CharacterController.transform.Rotate(Vector3.up * mouseX);
     }
 
+    private void AmmoEmpty()
+    {
+        if (playerCtx.ActionSM.CurrentState is ReloadState)
+            return;
+
+        playerCtx.ActionSM.ChangeState(StateName.Reload);
+    }
+
     public void OnMoveInput(InputAction.CallbackContext context)
     {
         Vector2 input = context.ReadValue<Vector2>();
         inputDir = new Vector3(input.x, 0, input.y);
     }
 
-    public void OnMoveInputCanceled(InputAction.CallbackContext context)
+    public void OnMoveInputCanceled(InputAction.CallbackContext _)
     {
         inputDir = Vector3.zero;
     }
 
-    public void OnSprintInput(InputAction.CallbackContext context)
+    public void OnSprintInput(InputAction.CallbackContext _)
     {
         if (inputDir != Vector3.zero)
             isSprinting = true;
     }
 
-    public void OnSprintInputCanceled(InputAction.CallbackContext context)
+    public void OnSprintInputCanceled(InputAction.CallbackContext _)
     {
         isSprinting = false;
     }
@@ -113,16 +142,16 @@ public class PlayerController : MonoBehaviour
         fireInput.isPressed = context.ReadValueAsButton();
     }
 
-    public void OnModeInput(InputAction.CallbackContext context)
+    public void OnModeInput(InputAction.CallbackContext _)
     {
         weapons.GetCurrentWeapon().NextFireMode();
     }
 
-    public void OnMainWeaponInput(InputAction.CallbackContext context)
+    public void OnMainWeaponInput(InputAction.CallbackContext _)
     {
         weapons.Equip(0);
     }
-    public void OnSubWeaponInput(InputAction.CallbackContext context)
+    public void OnSubWeaponInput(InputAction.CallbackContext _)
     {
         weapons.Equip(1);
     }
@@ -135,5 +164,11 @@ public class PlayerController : MonoBehaviour
     public void OnMeleeInputCanceled(InputAction.CallbackContext context)
     {
         isMelee = context.ReadValueAsButton();
+    }
+
+    public void OnReloadInput(InputAction.CallbackContext context)
+    {
+        if (isReload) return;
+        isReload = context.ReadValueAsButton();
     }
 }

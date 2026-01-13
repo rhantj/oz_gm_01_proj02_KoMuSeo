@@ -33,6 +33,7 @@ public abstract class BasePlayerState : BaseState
         Vector3 moveDir = Controller.transform.right * Controller.inputDir.x + 
             Controller.transform.forward * Controller.inputDir.z;
 
+        
         Vector3 velocity = moveDir * currentSpeed;
         velocity.y = yVelocity * Time.deltaTime;
 

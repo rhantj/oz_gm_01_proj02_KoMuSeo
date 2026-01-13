@@ -1,12 +1,15 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Linq;
+using System;
 
 public class WeaponManager : MonoBehaviour
 {
     [Header("Player weapon")]
     public Weapon[] weapons;
     public Weapon currentWeapon;
+
+    public event Action<Weapon> OnWeaponChanged;
 
     private void Awake()
     {
@@ -39,5 +42,7 @@ public class WeaponManager : MonoBehaviour
 
         currentWeapon = weapons[idx];
         currentWeapon.gameObject.SetActive(true);
+
+        OnWeaponChanged?.Invoke(currentWeapon);
     }
 }

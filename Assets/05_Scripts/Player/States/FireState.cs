@@ -24,5 +24,4 @@ public class FireState : BaseState
 
         currentWeapon.Fire(Controller.fireInput);
     }
-
 }
