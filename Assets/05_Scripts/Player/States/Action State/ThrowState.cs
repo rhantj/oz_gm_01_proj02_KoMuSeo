@@ -26,7 +26,11 @@ public class ThrowState : BaseState
         if (!thrown && timer >= THROW_DELAY)
         {
             thrown = true;
-            currentWeapon?.Fire(Controller.fireInput);
+            currentWeapon.Fire(new FireInputContext
+            {
+                isPressed = true,
+                wasPressedThisFrame = true
+            });
         }
 
         if(timer >= THROW_END)

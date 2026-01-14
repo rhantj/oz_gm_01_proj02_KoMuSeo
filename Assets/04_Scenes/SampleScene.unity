@@ -2940,7 +2940,7 @@ MonoBehaviour:
   currentMag: 0
   throwCooldown: 1
   grenadePF: {fileID: 2359082824459498391, guid: cb7015088db6810489726b7d63396a62, type: 3}
-  throwPower: 8
+  throwPower: 16
 --- !u!4 &1785284082
 Transform:
   m_ObjectHideFlags: 0

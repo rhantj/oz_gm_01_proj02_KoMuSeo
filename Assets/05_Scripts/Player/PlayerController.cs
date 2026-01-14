@@ -29,6 +29,8 @@ public class PlayerController : MonoBehaviour
     public bool isMelee;
     public bool isReload;
 
+    Weapon currentWeapon;
+
     private void Awake()
     {
         playerCtx = GetComponent<PlayerContext>();
@@ -58,11 +60,13 @@ public class PlayerController : MonoBehaviour
     void BindWeapon(Weapon weapon)
     {
         weapon.OnAmmoEmpty += AmmoEmpty;
+        currentWeapon = weapon;
     }
 
     void UnBindWeapon(Weapon weapon)
     {
         weapon.OnAmmoEmpty -= AmmoEmpty;
+        currentWeapon = weapon;
     }
 
     public void OnMouseInput()
@@ -176,7 +180,8 @@ public class PlayerController : MonoBehaviour
 
     public void OnReloadInput(InputAction.CallbackContext context)
     {
-        if (isReload) return;
+        if (isReload && currentWeapon.CurrentMag == currentWeapon.MaxMag) 
+            return;
         isReload = context.ReadValueAsButton();
     }
 }
