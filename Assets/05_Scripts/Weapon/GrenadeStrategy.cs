@@ -16,8 +16,12 @@ public class GrenadeStrategy : IWeaponFireStrategy
         if (Time.time < ctx.lastFireTime + ctx.fireRate) return false;
         ctx.lastFireTime = Time.time;
 
-        // TODO : fire grenade prefab
+        // TODO : Change to ObjectPool
         var g = GameObject.Instantiate(projectilePF, ctx.muzzle.transform.position, Quaternion.identity);
+
+        var gd = g.GetComponent<GrenadeDamage>();
+        gd.Init(ctx);
+
         var rb = g.GetComponent<Rigidbody>();
         rb.AddForce(ctx.muzzle.transform.forward * throwPower, ForceMode.Impulse);
 

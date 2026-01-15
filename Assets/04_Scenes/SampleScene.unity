@@ -2934,7 +2934,7 @@ MonoBehaviour:
   hitDamage: 100
   bulletSpeed: 200
   fireRate: 0.1
-  maxRange: 20
+  maxRange: 10
   spreadAngle: 0
   maxMag: 1
   currentMag: 0
