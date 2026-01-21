@@ -68,6 +68,7 @@ public class PlayerController : MonoBehaviour, IDamageable, IRegistryAdder
 
     public void OnMouseInput()
     {
+        if (Time.timeScale <= 0.5f) return;
         mouseDelta = Mouse.current.delta.ReadValue();
         float mouseX = mouseDelta.x * playerCtx.Seneitivity;
         float mouseY = mouseDelta.y * playerCtx.Seneitivity;

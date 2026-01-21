@@ -3,7 +3,6 @@ using UnityEngine;
 public class GrenadeWeapon : Weapon
 {
     [SerializeField] private float throwCooldown = 1f;
-    [SerializeField] private GameObject grenadePF;
     [SerializeField] private float throwPower = 16f;
 
     protected override void Awake()
@@ -19,7 +18,7 @@ public class GrenadeWeapon : Weapon
         fireModes.Add(FireMode.Single, new SingleFireMode());
         SetFireMode(FireMode.Single);
 
-        fireStrategy = new GrenadeStrategy(grenadePF, throwPower);
+        fireStrategy = new GrenadeStrategy(throwPower);
         CurrentMag = MaxMag;
     }
 

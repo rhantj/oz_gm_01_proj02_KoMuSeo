@@ -6,7 +6,8 @@ public class GrenadeDamage : MonoBehaviour
 {
     private float damage;
     private float maxRange;             // 30% damage
-    
+    private WaitForSeconds waitExplosion = new(3f);
+
     private WeaponContext ctx;
     public LayerMask enemyLayer;
 
@@ -32,10 +33,9 @@ public class GrenadeDamage : MonoBehaviour
 
     IEnumerator Co_Explosion()
     {
-        yield return new WaitForSeconds(3f);
+        yield return waitExplosion;
 
         int enemyCnt = Physics.OverlapSphereNonAlloc(transform.position, maxRange, targets, enemyLayer);
-        Debug.Log($"A : {enemyCnt}");
 
         for (int i = 0; i < enemyCnt; ++i)
         {
@@ -62,5 +62,7 @@ public class GrenadeDamage : MonoBehaviour
                 dmg.ApplyDamage(res);
             }
         }
+
+        ObjectPoolManager.Instance.Despawn(gameObject);
     }
 }

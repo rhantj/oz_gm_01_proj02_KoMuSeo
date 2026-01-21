@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using static UnityEngine.GraphicsBuffer;
 
 public enum UIKey
 {
@@ -26,7 +27,7 @@ public class UIManager : MonoBehaviour, IRegistryAdder
 
     List<UIPanel> rewindList = new();
     Dictionary<UIKey, UIPanel> panels = new();
-    //public event Action OnUIChanged;
+    Dictionary<UIPanel, UIKey> panelKeys = new();
 
     void Awake()
     {
@@ -43,7 +44,7 @@ public class UIManager : MonoBehaviour, IRegistryAdder
         menuVM = new MenuViewModel(this, gm);
         settingVM = new SettingViewModel(this);
 
-        Show(UIKey.HUD, false);
+        Show(UIKey.HUD, true);
         ShowMenu(MenuMode.Start, true);
     }
 
@@ -55,30 +56,33 @@ public class UIManager : MonoBehaviour, IRegistryAdder
     void AddtoDictionary()
     {
         panels.Clear();
-        panels[UIKey.HUD] = hudUI;
-        panels[UIKey.Menu] = menuUI;
-        panels[UIKey.Setting] = settingUI;
-        panels[UIKey.GameOver] = gameoverUI;
-        panels[UIKey.FadeOut] = fadeoutUI;
+        panelKeys.Clear();
+
+        Add(UIKey.HUD, hudUI);
+        Add(UIKey.Menu, menuUI);
+        Add(UIKey.Setting, settingUI);
+        Add(UIKey.GameOver, gameoverUI);
+        Add(UIKey.FadeOut, fadeoutUI);
+    }
+
+    void Add(UIKey key, UIPanel panel)
+    {
+        if (!panel) return;
+        panels[key] = panel;
+        panelKeys[panel] = key;
     }
 
     public void Show(UIKey key, bool open)
     {
         if (!panels.TryGetValue(key, out var p) || !p) return;
 
-        if (open && !p.IsOpen)
+        if (open)
         {
-            BindVM(key, p);
-            p.Open();
-            rewindList.Add(p);
+            OpenPanel(key, p);
         }
         else
         {
-            UnbindVM(key, p);
-            p.Close();
-
-            if (rewindList.Count > 0)
-                rewindList.RemoveAt(rewindList.Count - 1);
+            CloseTo(p);
         }
     }
 
@@ -142,5 +146,74 @@ public class UIManager : MonoBehaviour, IRegistryAdder
                 }
                 break;
         }
+    }
+
+    public bool CloseUpperUI()
+    {
+        for (int i = rewindList.Count - 1; i >= 0; --i)
+        {
+            var top = rewindList[i];
+            if (!top)
+            {
+                rewindList.RemoveAt(i);
+                continue;
+            }
+
+            if (top == hudUI) return false;
+
+            var key = panelKeys[top];
+            UnbindVM(key, top);
+            top.Close();
+            rewindList.RemoveAt(i);
+            return true;
+        }
+
+        return false;
+    }
+
+    void CloseTo(UIPanel target)
+    {
+        if (!target) return;
+
+        int idx = rewindList.LastIndexOf(target);
+        if (idx < 0) return;
+
+        // target 위에 있는 것들부터 닫기
+        for (int i = rewindList.Count - 1; i > idx; --i)
+        {
+            var p = rewindList[i];
+            if (!p) { rewindList.RemoveAt(i); continue; }
+
+            if (p == hudUI) continue; // HUD는 닫지 않음
+
+            var key = panelKeys[p];
+            UnbindVM(key, p);
+            p.Close();
+            rewindList.RemoveAt(i);
+        }
+
+        if (target != hudUI)
+        {
+            var key = panelKeys[target];
+            UnbindVM(key, target);
+            target.Close();
+            rewindList.RemoveAt(idx);
+        }
+    }
+
+    void OpenPanel(UIKey key, UIPanel panel)
+    {
+        if (panel.IsOpen)
+        {
+            if (!rewindList.Contains(panel))
+                rewindList.Add(panel);
+            return;
+        }
+
+        BindVM(key, panel);
+        panel.Open();
+
+        if (!rewindList.Contains(panel))
+            rewindList.Add(panel);
     }
 }

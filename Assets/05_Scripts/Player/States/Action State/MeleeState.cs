@@ -15,12 +15,18 @@ public class MeleeState : BaseState
     const float MELEE_DURATION = 0.8f;
     const float HIT_TIME = 0.1f;
     HashSet<GameObject> targets = new();
+    DamageSystem dms;
 
     public MeleeState(PlayerController controller) : base(controller) { }
 
     public override void OnEnterState()
     {
         base.OnEnterState();
+
+        if(dms == null)
+        {
+            dms = StaticRegistry.Find<DamageSystem>();
+        }
 
         timer = 0f;
         attacked = false;
@@ -65,13 +71,25 @@ public class MeleeState : BaseState
             {
                 Debug.DrawRay(Controller.transform.position, dir * distance, Color.red);
             }
-        }
 
-        foreach(var t in targets)
-        {
-            if(t.TryGetComponent<Target>(out var target))
+            foreach(var t in targets)
             {
-                target.hp -= 200;
+                if(t.TryGetComponent<IDamageable>(out var dmg))
+                {
+                    DamageContext context = new()
+                    {
+                        attacker = Controller.gameObject,
+                        target = t,
+                        hitPoint = hit.point,
+                        hitNormal = hit.normal,
+                        damage = 100,
+                        distance = hit.distance,
+                        damageType = DamageType.Melee,
+                        hitZone = dms.ResolveHitZone(hit.collider)
+                    };
+                    DamageResult res = dms.Pipeline.Calculate(context);
+                    dmg.ApplyDamage(res);
+                }
             }
         }
     }

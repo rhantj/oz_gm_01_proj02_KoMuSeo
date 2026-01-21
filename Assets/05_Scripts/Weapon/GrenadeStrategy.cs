@@ -2,12 +2,10 @@ using UnityEngine;
 
 public class GrenadeStrategy : IWeaponFireStrategy
 {
-    GameObject projectilePF;
     float throwPower;
 
-    public GrenadeStrategy(GameObject projectilePF, float throwPower)
+    public GrenadeStrategy(float throwPower)
     {
-        this.projectilePF = projectilePF;
         this.throwPower = throwPower;
     }
 
@@ -17,7 +15,7 @@ public class GrenadeStrategy : IWeaponFireStrategy
         ctx.lastFireTime = Time.time;
 
         // TODO : Change to ObjectPool
-        var g = GameObject.Instantiate(projectilePF, ctx.muzzle.transform.position, Quaternion.identity);
+        var g = ObjectPoolManager.Instance.Spawn(PoolId.Grenade, ctx.muzzle.position, ctx.muzzle.rotation);
 
         var gd = g.GetComponent<GrenadeDamage>();
         gd.Init(ctx);

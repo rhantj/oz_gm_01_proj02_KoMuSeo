@@ -4,7 +4,16 @@ public abstract class BasePlayerState : BaseState
 {
     protected PlayerContext playerCtx;
     protected float yVelocity;
-    protected const float gravity = -20f;
+    protected float gravity;
+    protected float minG = -25;
+    protected float maxG = -60;
+
+    protected bool groundedRay;
+    protected Vector3 groundNormal = Vector3.up;
+
+    protected float groundRayDist = .8f;
+    protected float slopeMaxAngle = 40f;
+    protected float stickToGroundVelocity = -4f;
 
     protected Vector3 newMovementVelocity;
     protected Vector3 newMovementVelocityRef;
@@ -20,7 +29,10 @@ public abstract class BasePlayerState : BaseState
         Vector3 moveDir = Controller.transform.right * Controller.inputDir.x +
                           Controller.transform.forward * Controller.inputDir.y;
 
-        newMovementVelocity = moveDir.normalized * playerCtx.MoveSpeed;
+        if (moveDir.sqrMagnitude > 0.0001f)
+            moveDir.Normalize();
+
+        newMovementVelocity = moveDir * playerCtx.MoveSpeed;
         newMovementVelocityRef = Vector3.zero;
     }
 
@@ -29,24 +41,64 @@ public abstract class BasePlayerState : BaseState
         CommonMovement();
     }
 
+    void CalculateSlope()
+    {
+        var origin = playerCtx.GroundPivot.position;
+
+        Debug.DrawRay(origin, Vector3.down * 0.5f, Color.red);
+        if (Physics.Raycast(origin, Vector3.down, out var hit, groundRayDist, playerCtx.groundLayer))
+        {
+            groundedRay = true;
+            groundNormal = hit.normal;
+
+            float cos = groundNormal.y;
+            float sin = Mathf.Sqrt(groundNormal.x * groundNormal.x + groundNormal.z * groundNormal.z);          
+            float deg = Mathf.Atan2(sin, cos) * Mathf.Rad2Deg;
+            float t = Mathf.Clamp01(deg / slopeMaxAngle);
+            gravity = Mathf.Lerp(minG, maxG, t);
+        }
+        else
+        {
+            groundedRay = false;
+            groundNormal = Vector3.up;
+            gravity = minG;
+        }
+
+        Controller.playerCtx.GRAVITY = gravity;
+    }
+
     public void ApplyGravity()
     {
         if (playerCtx.CharacterController.isGrounded && yVelocity < 0f)
-            yVelocity = -1f;
+        {
+            yVelocity = stickToGroundVelocity;
+            return;
+        }
 
         yVelocity += gravity * Time.deltaTime;
     }
 
     public void CommonMovement()
     {
-        ApplyGravity();
-        Vector3 moveDir = Controller.transform.right * Controller.inputDir.x + 
-            Controller.transform.forward * Controller.inputDir.z;
-        moveDir.Normalize();
+        CalculateSlope();
+
+        Vector3 inputDir = new Vector3(Controller.inputDir.x, 0f, Controller.inputDir.z);
+
+        Vector3 moveDir =
+            Controller.transform.right * inputDir.x +
+            Controller.transform.forward * inputDir.z;
+
+        if (moveDir.sqrMagnitude > 0.0001f)
+            moveDir.Normalize();
+
+        if (groundedRay && moveDir.sqrMagnitude > 0.0001f)
+        {
+            moveDir = Vector3.ProjectOnPlane(moveDir, groundNormal).normalized;
+        }
 
         Vector3 targetVelocity = moveDir * playerCtx.MoveSpeed;
 
-        if(moveDir.sqrMagnitude < 0.01f)
+        if (moveDir.sqrMagnitude < 0.01f)
         {
             newMovementVelocity = Vector3.zero;
             newMovementVelocityRef = Vector3.zero;
@@ -54,15 +106,16 @@ public abstract class BasePlayerState : BaseState
         else
         {
             newMovementVelocity = Vector3.SmoothDamp(
-                            newMovementVelocity,
-                            targetVelocity,
-                            ref newMovementVelocityRef,
-                            SMOOTH_TIME);
+                newMovementVelocity,
+                targetVelocity,
+                ref newMovementVelocityRef,
+                SMOOTH_TIME);
         }
+
+        ApplyGravity();
 
         Vector3 velocity = newMovementVelocity;
         velocity.y = yVelocity;
-
 
         playerCtx.CharacterController.Move(velocity * Time.deltaTime);
     }
