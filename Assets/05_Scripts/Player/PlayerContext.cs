@@ -92,9 +92,4 @@ public class PlayerContext : MonoBehaviour
         ActionSM.AddState(StateName.Melee, new MeleeState(player));
         ActionSM.AddState(StateName.Throw, new ThrowState(player));
     }
-
-    public void OnHPChangeInvoke()
-    {
-        OnHPChanged?.Invoke(CurrentHP, MaxHP);
-    }
 }

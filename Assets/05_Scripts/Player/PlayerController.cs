@@ -21,7 +21,6 @@ public class PlayerController : MonoBehaviour, IDamageable, IRegistryAdder
     public bool ISGROUNDED;
     public bool isJump = false;
     public bool isCrouching = false;
-    //public bool isFiring = false;
     public bool prevFirePressed;
     public bool isMelee;
     public bool isReload;
